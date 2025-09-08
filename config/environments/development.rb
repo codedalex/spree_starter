@@ -30,6 +30,9 @@ Rails.application.configure do
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
+  
+  # Configure Active Storage to use the correct host and port for URL generation
+  Rails.application.routes.default_url_options = { host: "localhost", port: 3001 }
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
@@ -38,7 +41,7 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   # Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  config.action_mailer.default_url_options = { host: "localhost", port: 3001 }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

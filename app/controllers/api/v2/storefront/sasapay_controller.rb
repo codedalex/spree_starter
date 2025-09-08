@@ -191,6 +191,45 @@ module Api
               return
             end
 
+            # Debug logging
+            Rails.logger.info "Order Debug - Number: #{@order.number}, Total: #{@order.total}, Currency: #{@order.currency}"
+            Rails.logger.info "Order Debug - Items count: #{@order.line_items.count}"
+            
+            # Validate order has items
+            if @order.line_items.count == 0
+              render json: { 
+                status: 'error', 
+                message: 'Your cart is empty. Please add items to your cart before proceeding with payment.',
+                order_total: @order.total,
+                items_count: @order.line_items.count,
+                error_code: 'EMPTY_CART'
+              }, status: :bad_request
+              return
+            end
+            
+            # Validate order amount
+            if @order.total <= 0
+              render json: { 
+                status: 'error', 
+                message: 'Order total must be greater than KES 0. Please add items to your cart before proceeding with payment.',
+                order_total: @order.total,
+                items_count: @order.line_items.count,
+                error_code: 'ZERO_TOTAL'
+              }, status: :bad_request
+              return
+            end
+            
+            # Validate minimum amount (SasaPay requirement)
+            if @order.total < 1
+              render json: { 
+                status: 'error', 
+                message: 'Minimum payment amount is KES 1. Please ensure your order total meets this requirement.',
+                order_total: @order.total,
+                minimum_required: 1
+              }, status: :bad_request
+              return
+            end
+
             formatted_phone = format_kenyan_phone(phone_number)
             response = call_sasapay_api('mpesa_stk', {
               phone_number: formatted_phone,
@@ -258,19 +297,22 @@ module Api
               'https://api.sasapay.app' : 
               'https://sandbox.sasapay.app'
 
-            # Use appropriate SasaPay API endpoint based on payment type
+            # Use correct SasaPay API endpoints based on the working implementation
             endpoint = case payment_type
                       when 'mpesa_stk'
-                        '/api/v1/payments/c2b-payment-request/'  # C2B API for M-Pesa
+                        '/api/v1/payments/request-payment/'  # Working M-PESA STK endpoint from NestJS code
                       when 'airtel_money'
-                        '/api/v1/payments/c2b-payment-request/'  # C2B API for Airtel Money
+                        '/api/payments/mobile-checkout/airtel/'  # Working Airtel Money endpoint
                       when 'card'
-                        '/api/v1/payments/request-payment/'      # Checkout API for cards
+                        '/api/payments/card-payments/'           # Working Card payments endpoint
                       else
-                        '/api/v1/payments/request-payment/'      # Default Checkout API
+                        '/api/v1/payments/request-payment/'      # Default payment endpoint
                       end
 
             uri = URI("#{base_url}#{endpoint}")
+            
+            Rails.logger.info "SasaPay API Call: #{uri}"
+            Rails.logger.info "SasaPay Payment Type: #{payment_type}"
             
             http = Net::HTTP.new(uri.host, uri.port)
             http.use_ssl = true
@@ -282,28 +324,46 @@ module Api
             # Prepare the request body according to SasaPay API specification
             merchant_code = payment_method.preferred_merchant_code || payment_method.preferred_merchant_id
             
-            if payment_type == 'mpesa_stk' || payment_type == 'airtel_money'
-              # C2B API request format
+            if payment_type == 'mpesa_stk'
+              # M-PESA STK Push request format (based on working implementation)
               request_body = {
                 MerchantCode: merchant_code,
-                NetworkCode: payment_type == 'mpesa_stk' ? '63902' : '63903', # SasaPay channel codes
+                NetworkCode: "63902", # M-PESA network code
                 PhoneNumber: payment_data[:phone_number],
                 TransactionDesc: payment_data[:description],
                 AccountReference: payment_data[:order_number],
-                Currency: @order.currency,
-                Amount: payment_data[:amount],
-                CallBackURL: payment_method.preferred_callback_url
+                Currency: @order.currency || "KES",
+                Amount: payment_data[:amount].to_s,
+                CallBackURL: payment_method.preferred_callback_url || "#{request.base_url}/api/v2/storefront/sasapay/callback"
+              }
+            elsif payment_type == 'airtel_money'
+              # Airtel Money request format
+              request_body = {
+                merchant_code: merchant_code,
+                mobile_number: payment_data[:phone_number],
+                amount: payment_data[:amount],
+                currency_code: @order.currency || "KES",
+                narration: payment_data[:description],
+                transaction_reference: payment_data[:order_number],
+                call_back_url: payment_method.preferred_callback_url || "#{request.base_url}/api/v2/storefront/sasapay/callback"
               }
             else
-              # Checkout API request format (for cards and general payments)
+              # Card/Hosted checkout request format (based on working implementation)
               request_body = {
                 MerchantCode: merchant_code,
                 Amount: payment_data[:amount],
-                Currency: @order.currency,
-                OrderId: payment_data[:order_number],
+                Reference: payment_data[:order_number],
                 Description: payment_data[:description],
-                CallbackUrl: payment_method.preferred_callback_url,
-                ReturnUrl: payment_method.preferred_return_url
+                Currency: @order.currency || "KES",
+                PayerEmail: @order.email || "customer@golfnvibes.com",
+                CallbackUrl: payment_method.preferred_callback_url || "#{request.base_url}/api/v2/storefront/sasapay/callback",
+                RedirectUrl: payment_method.preferred_return_url || "#{request.base_url}/orders/#{@order.number}",
+                SuccessUrl: payment_method.preferred_return_url || "#{request.base_url}/orders/#{@order.number}?status=success",
+                FailureUrl: payment_method.preferred_return_url || "#{request.base_url}/orders/#{@order.number}?status=failed",
+                CardEnabled: true,
+                MpesaEnabled: true,
+                SasaPayWalletEnabled: true,
+                AirtelEnabled: false
               }
             end
 
@@ -389,8 +449,22 @@ module Api
             request['Content-Type'] = 'application/json'
             
             # Use CLIENT_ID and CLIENT_SECRET from SasaPay Developer Portal
-            client_id = payment_method.preferred_client_id || payment_method.preferred_api_key
-            client_secret = payment_method.preferred_client_secret || payment_method.preferred_merchant_id
+            # TEMPORARY FIX: The real CLIENT_ID is stored in merchant_id due to admin configuration confusion
+            # Check if client_id looks like an app name instead of an actual API CLIENT_ID
+            if payment_method.preferred_client_id.present? && payment_method.preferred_client_id =~ /^[a-zA-Z\s]+$/
+              # If client_id looks like "Golf N Vibes", use merchant_id as the real CLIENT_ID
+              client_id = payment_method.preferred_merchant_id
+              Rails.logger.warn "SasaPay: Using merchant_id field as CLIENT_ID because client_id field contains app name ('#{payment_method.preferred_client_id}')"
+            else
+              client_id = payment_method.preferred_client_id || payment_method.preferred_api_key
+            end
+            client_secret = payment_method.preferred_client_secret || payment_method.preferred_api_key
+            
+            # Validate credentials format
+            if client_id.blank? || client_secret.blank?
+              Rails.logger.error "SasaPay Auth Error: Missing CLIENT_ID or CLIENT_SECRET"
+              return nil
+            end
             
             # Set Basic Authentication header (as per SasaPay documentation)
             request.basic_auth(client_id, client_secret)

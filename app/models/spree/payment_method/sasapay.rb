@@ -104,8 +104,12 @@ module Spree
       request['Content-Type'] = 'application/json'
       
       # Use CLIENT_ID and CLIENT_SECRET for authentication via Basic Auth
-      client_id = preferred_client_id || preferred_api_key
-      client_secret = preferred_client_secret || preferred_merchant_id
+      # Priority: use new SasaPay credentials over legacy ones
+      client_id = preferred_client_id.present? ? preferred_client_id : preferred_api_key
+      client_secret = preferred_client_secret.present? ? preferred_client_secret : preferred_merchant_id
+      
+      Rails.logger.info "SasaPay Auth - Using Client ID: #{client_id}"
+      Rails.logger.info "SasaPay Auth - Client Secret present: #{client_secret.present?}"
       
       # Set Basic Authentication header
       request.basic_auth(client_id, client_secret)
