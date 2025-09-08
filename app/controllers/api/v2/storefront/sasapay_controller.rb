@@ -105,6 +105,113 @@ module Api
             end
           end
 
+          # Create order with items and initiate payment
+          def create_order_and_pay
+            begin
+              Rails.logger.info "Creating order and initiating payment with params: #{params.inspect}"
+              
+              # Extract parameters
+              items_data = params[:items] || []
+              customer_data = params[:customer_data] || {}
+              payment_type = params[:payment_type] || 'mpesa_stk'
+              phone_number = params[:phone_number]
+              
+              # Validate input
+              if items_data.empty?
+                render json: { status: 'error', message: 'No items provided' }, status: :bad_request
+                return
+              end
+              
+              if payment_type == 'mpesa_stk' && phone_number.blank?
+                render json: { status: 'error', message: 'Phone number required for M-Pesa' }, status: :bad_request
+                return
+              end
+              
+              # Create order with line items
+              total_amount = 0
+              
+              @order = Spree::Order.create!(
+                store: current_store,
+                currency: 'KES',
+                email: customer_data[:email],
+                state: 'cart'
+              )
+              
+              # Add line items
+              items_data.each do |item_data|
+                product_id = item_data[:product_id] || item_data['product_id']
+                quantity = (item_data[:quantity] || item_data['quantity'] || 1).to_i
+                
+                # Find product by ID
+                product = current_store.products.find_by(id: product_id)
+                unless product
+                  Rails.logger.warn "Product not found: #{product_id}"
+                  next
+                end
+                
+                # Use master variant
+                variant = product.master
+                unless variant
+                  Rails.logger.warn "No master variant for product: #{product_id}"
+                  next
+                end
+                
+                # Create line item directly
+                line_item = @order.line_items.create!(
+                  variant: variant,
+                  quantity: quantity,
+                  price: variant.price,
+                  currency: @order.currency
+                )
+                
+                total_amount += line_item.amount
+                Rails.logger.info "Added line item: #{product.name} x#{quantity} = #{line_item.amount}"
+              end
+              
+              # Update order totals
+              @order.update!(
+                item_total: total_amount,
+                total: total_amount
+              )
+              
+              # Add customer information if provided
+              if customer_data.present? && customer_data[:email].present?
+                @order.update!(email: customer_data[:email])
+              end
+              
+              Rails.logger.info "Created order #{@order.number} with total: #{@order.total}"
+              
+              # Get SasaPay payment method
+              sasapay_payment_method = Spree::PaymentMethod::Sasapay.active.first
+              
+              unless sasapay_payment_method
+                render json: { status: 'error', message: 'SasaPay not configured' }, status: :service_unavailable
+                return
+              end
+              
+              # Initiate payment
+              response = call_sasapay_api(payment_type, {
+                phone_number: phone_number,
+                amount: @order.total,
+                order_number: @order.number,
+                description: "Golf n Vibes Order ##{@order.number}"
+              }, sasapay_payment_method)
+              
+              render json: response.merge({
+                order_number: @order.number,
+                order_total: @order.total,
+                items_count: @order.line_items.count
+              })
+              
+            rescue => e
+              Rails.logger.error "Error in create_order_and_pay: #{e.message}\n#{e.backtrace.join("\n")}"
+              render json: { 
+                status: 'error', 
+                message: "Failed to create order: #{e.message}" 
+              }, status: :internal_server_error
+            end
+          end
+
           # Legacy M-Pesa STK Push endpoint (for backward compatibility)
           def mpesa_stk_push
             phone_number = params[:phone_number]
@@ -179,6 +286,75 @@ module Api
             end
             
             formatted
+          end
+
+          # Create order with items endpoint
+          def create_order_with_items
+            begin
+              # Get items from request
+              items_data = params[:items] || []
+              customer_data = params[:customer_data] || {}
+              
+              if items_data.empty?
+                render json: {
+                  status: 'error',
+                  message: 'No items provided'
+                }, status: :bad_request
+                return
+              end
+              
+              # Create a new order
+              @order = current_store.orders.create!(
+                currency: 'KES',
+                email: customer_data[:email]
+              )
+              
+              # Add line items to the order
+              total_amount = 0
+              items_data.each do |item|
+                # Find the product and its master variant
+                product = current_store.products.find_by(id: item[:product_id])
+                next unless product
+                
+                variant = product.master
+                next unless variant
+                
+                # Create line item
+                line_item = @order.line_items.build(
+                  variant: variant,
+                  quantity: item[:quantity] || 1,
+                  price: variant.price
+                )
+                
+                if line_item.save
+                  total_amount += line_item.total
+                  Rails.logger.info "Added item: #{product.name} x#{line_item.quantity} = #{line_item.total}"
+                end
+              end
+              
+              # Update order totals
+              @order.update_columns(
+                item_total: total_amount,
+                total: total_amount
+              )
+              
+              Rails.logger.info "Created order #{@order.number} with #{@order.line_items.count} items, total: #{@order.total}"
+              
+              render json: {
+                status: 'success',
+                order_number: @order.number,
+                order_token: @order.token,
+                total: @order.total,
+                items_count: @order.line_items.count
+              }
+              
+            rescue => e
+              Rails.logger.error "Error creating order with items: #{e.message}"
+              render json: {
+                status: 'error',
+                message: e.message
+              }, status: :internal_server_error
+            end
           end
 
           # Handle M-Pesa STK Push via SasaPay API

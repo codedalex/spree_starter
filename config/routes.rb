@@ -54,6 +54,8 @@ Rails.application.routes.draw do
             get 'status/:order_number', action: :status, as: :status
             post 'mpesa/:order_number', action: :mpesa_stk_push, as: :mpesa_stk_push
             post 'payment/:order_number', action: :initiate_payment, as: :initiate_payment
+            # New endpoint for creating order with items and initiating payment
+            post 'create_order_and_pay', action: :create_order_and_pay, as: :create_order_and_pay
           end
         end
       end
