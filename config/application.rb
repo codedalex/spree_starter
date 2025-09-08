@@ -33,5 +33,17 @@ module SpreeStarter
 
     # https://github.com/rails/rails/issues/45826
     config.active_record.yaml_column_permitted_classes = [Symbol, BigDecimal, Date, Time, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone, ActiveSupport::HashWithIndifferentAccess]
+    
+    # Suppress unpermitted parameter warnings for empty parameters
+    config.action_controller.action_on_unpermitted_parameters = :log
+    
+    # Configure CORS for headless API access
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins 'localhost:3000', '127.0.0.1:3000', 'http://localhost:3000', 'http://127.0.0.1:3000',
+                'localhost:3001', '127.0.0.1:3001', 'http://localhost:3001', 'http://127.0.0.1:3001'
+        resource '/api/*', headers: :any, methods: [:get, :post, :put, :patch, :delete, :options, :head]
+      end
+    end
   end
 end

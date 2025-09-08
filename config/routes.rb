@@ -40,6 +40,26 @@ Rails.application.routes.draw do
   # the default of "spree".
   mount Spree::Core::Engine, at: '/'
 
+  # Custom API routes for storefront
+  namespace :api do
+    namespace :v2 do
+      namespace :storefront do
+        # Payment methods endpoint
+        resources :payment_methods, only: [:index]
+        
+        # SasaPay payment routes
+        resources :sasapay, only: [] do
+          collection do
+            post :callback
+            get 'status/:order_number', action: :status, as: :status
+            post 'mpesa/:order_number', action: :mpesa_stk_push, as: :mpesa_stk_push
+            post 'payment/:order_number', action: :initiate_payment, as: :initiate_payment
+          end
+        end
+      end
+    end
+  end
+
   mount Sidekiq::Web => "/sidekiq" # access it at http://localhost:3000/sidekiq
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
@@ -48,6 +68,6 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Defines the root path route ("/")
-  root "spree/home#index"
+  # Defines the root path route ("/") - redirect to admin for headless setup
+  root "spree/admin/orders#index"
 end

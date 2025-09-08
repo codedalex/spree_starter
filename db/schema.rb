@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_02_154146) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_05_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -656,6 +656,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_02_154146) do
     t.boolean "accept_marketing", default: false
     t.boolean "signup_for_an_account", default: false
     t.bigint "gift_card_id"
+    t.string "sasapay_payment_url"
     t.index ["approver_id"], name: "index_spree_orders_on_approver_id"
     t.index ["bill_address_id"], name: "index_spree_orders_on_bill_address_id"
     t.index ["canceler_id"], name: "index_spree_orders_on_canceler_id"

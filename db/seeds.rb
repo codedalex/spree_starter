@@ -9,3 +9,6 @@
 #   end
 
 Spree::Core::Engine.load_seed if defined?(Spree::Core)
+
+# Load custom seeds
+Dir[Rails.root.join('db', 'seeds', '*.rb')].each { |f| load f }
