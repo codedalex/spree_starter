@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Golf n Vibes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        /* Left Column - Forms */
+        .checkout-form {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #3b82f6;
+        }
+
+        /* Shipping Methods */
+        .shipping-methods {
+            margin: 1.5rem 0;
+        }
+
+        .shipping-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .shipping-option:hover {
+            border-color: #3b82f6;
+        }
+
+        .shipping-option.selected {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .shipping-info h4 {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .shipping-info p {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .shipping-price {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            margin: 1.5rem 0;
+        }
+
+        .payment-option {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .payment-option.selected {
+            border-color: #3b82f6;
+        }
+
+        .payment-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem;
+            cursor: pointer;
+            background: white;
+        }
+
+        .payment-header:hover {
+            background: #f8fafc;
+        }
+
+        .payment-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .payment-icon {
+            width: 40px;
+            height: 40px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .payment-details h4 {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .payment-details p {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .payment-logos {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .payment-logo {
+            width: 32px;
+            height: 20px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .payment-form {
+            padding: 1.25rem;
+            background: #f8fafc;
+            border-top: 1px solid #e5e7eb;
+            display: none;
+        }
+
+        .payment-option.selected .payment-form {
+            display: block;
+        }
+
+        .card-row {
+            display: grid;
+            grid-template-columns: 1fr 100px;
+            gap: 1rem;
+        }
+
+        /* Right Column - Order Summary */
+        .order-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #64748b;
+            position: relative;
+        }
+
+        .item-quantity {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #64748b;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .item-details h4 {
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-details p {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .item-price {
+            margin-left: auto;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .discount-section {
+            margin: 1.5rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .discount-input {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .discount-input input {
+            flex: 1;
+        }
+
+        .apply-btn {
+            padding: 0.75rem 1.5rem;
+            background: #f1f5f9;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .apply-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .order-totals {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .total-row.final {
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding-top: 0.75rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        /* Pay Button */
+        .pay-button {
+            width: 100%;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 2rem;
+        }
+
+        .pay-button:hover {
+            background: #b91c1c;
+        }
+
+        .pay-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* Footer Links */
+        .footer-links {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .footer-links a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.875rem;
+            margin: 0 1rem;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Radio Button Styling */
+        .radio-button {
+            width: 20px;
+            height: 20px;
+            accent-color: #3b82f6;
+        }
+
+        /* Security Notice */
+        .security-notice {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #0369a1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="checkout-grid">
+            <!-- Left Column - Forms -->
+            <div class="checkout-form">
+                <!-- Contact Information -->
+                <div class="section">
+                    <h2 class="section-title">Contact</h2>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" id="email" class="form-input" placeholder="Enter your email">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="newsletter" class="checkbox">
+                        <label for="newsletter">Email me with news and offers</label>
+                    </div>
+                </div>
+
+                <!-- Delivery -->
+                <div class="section">
+                    <h2 class="section-title">Delivery</h2>
+                    
+                    <!-- Shipping Options -->
+                    <div class="shipping-methods">
+                        <div class="shipping-option selected">
+                            <input type="radio" name="shipping" value="ship" class="radio-button" checked>
+                            <div class="shipping-info">
+                                <h4>Ship</h4>
+                            </div>
+                            <div class="shipping-price">🚚</div>
+                        </div>
+                        <div class="shipping-option">
+                            <input type="radio" name="shipping" value="pickup" class="radio-button">
+                            <div class="shipping-info">
+                                <h4>Pick up</h4>
+                            </div>
+                            <div class="shipping-price">🏪</div>
+                        </div>
+                    </div>
+
+                    <!-- Address Form -->
+                    <div class="address-form">
+                        <div class="form-group">
+                            <label class="form-label" for="country">Country/Region</label>
+                            <select id="country" class="form-select">
+                                <option>Kenya</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="firstName">First name</label>
+                                <input type="text" id="firstName" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="lastName">Last name</label>
+                                <input type="text" id="lastName" class="form-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="company">Company (optional)</label>
+                            <input type="text" id="company" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="address">Address</label>
+                            <input type="text" id="address" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="apartment">Apartment, suite, etc. (optional)</label>
+                            <input type="text" id="apartment" class="form-input">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="city">City</label>
+                                <input type="text" id="city" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="postal">Postal code (optional)</label>
+                                <input type="text" id="postal" class="form-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="phone">Phone</label>
+                            <input type="tel" id="phone" class="form-input">
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="save-info" class="checkbox">
+                            <label for="save-info">Save this information for next time</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping method -->
+                <div class="section">
+                    <h2 class="section-title">Shipping method</h2>
+                    <div class="shipping-methods">
+                        <div class="shipping-option selected">
+                            <input type="radio" name="delivery" value="nairobi" class="radio-button" checked>
+                            <div class="shipping-info">
+                                <h4>Delivery Outside Nairobi</h4>
+                                <p>Tracking number provided</p>
+                            </div>
+                            <div class="shipping-price">$2.32</div>
+                        </div>
+                        <div class="shipping-option">
+                            <input type="radio" name="delivery" value="g4s" class="radio-button">
+                            <div class="shipping-info">
+                                <h4>G4S or Wells Fargo</h4>
+                                <p>Tracking number provided</p>
+                            </div>
+                            <div class="shipping-price">$4.65</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment -->
+                <div class="section">
+                    <h2 class="section-title">Payment</h2>
+                    <div class="security-notice">
+                        All transactions are secure and encrypted.
+                    </div>
+                    
+                    <div class="payment-methods">
+                        <!-- IntaSend Payment -->
+                        <div class="payment-option selected">
+                            <div class="payment-header">
+                                <input type="radio" name="payment" value="intasend" class="radio-button" checked>
+                                <div class="payment-info">
+                                    <div class="payment-icon">💳</div>
+                                    <div class="payment-details">
+                                        <h4>IntaSend (Pay with Card and M-Pesa)</h4>
+                                    </div>
+                                </div>
+                                <div class="payment-logos">
+                                    <div class="payment-logo">VISA</div>
+                                    <div class="payment-logo">MC</div>
+                                    <div class="payment-logo">M-PESA</div>
+                                </div>
+                            </div>
+                            <div class="payment-form">
+                                <p style="text-align: center; color: #64748b; margin: 1rem 0;">
+                                    After clicking "Pay now", you will be redirected to IntaSend (Pay with Card and M-Pesa) to complete your purchase securely.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Cash on Delivery -->
+                        <div class="payment-option">
+                            <div class="payment-header">
+                                <input type="radio" name="payment" value="cod" class="radio-button">
+                                <div class="payment-info">
+                                    <div class="payment-icon">💰</div>
+                                    <div class="payment-details">
+                                        <h4>Cash on Delivery</h4>
+                                        <p>Pay when you receive your order</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="payment-form">
+                                <p style="color: #64748b;">
+                                    You will pay for your order when it is delivered to your address.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Billing address -->
+                <div class="section">
+                    <h2 class="section-title">Billing address</h2>
+                    <div class="shipping-methods">
+                        <div class="shipping-option">
+                            <input type="radio" name="billing" value="same" class="radio-button">
+                            <div class="shipping-info">
+                                <h4>Same as shipping address</h4>
+                            </div>
+                        </div>
+                        <div class="shipping-option selected">
+                            <input type="radio" name="billing" value="different" class="radio-button" checked>
+                            <div class="shipping-info">
+                                <h4>Use a different billing address</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Billing Address Form -->
+                    <div class="address-form" style="margin-top: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="billing-country">Country/Region</label>
+                            <select id="billing-country" class="form-select">
+                                <option>Kenya</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="billing-firstName">First name</label>
+                                <input type="text" id="billing-firstName" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="billing-lastName">Last name</label>
+                                <input type="text" id="billing-lastName" class="form-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="billing-company">Company (optional)</label>
+                            <input type="text" id="billing-company" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="billing-address">Address</label>
+                            <input type="text" id="billing-address" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="billing-apartment">Apartment, suite, etc. (optional)</label>
+                            <input type="text" id="billing-apartment" class="form-input">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="billing-city">City</label>
+                                <input type="text" id="billing-city" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="billing-postal">Postal code (optional)</label>
+                                <input type="text" id="billing-postal" class="form-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="billing-phone">Phone (optional)</label>
+                            <input type="tel" id="billing-phone" class="form-input">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="pay-button">Pay now</button>
+
+                <div class="footer-links">
+                    <a href="/refund-policy">Refund policy</a>
+                    <a href="/shipping">Shipping</a>
+                    <a href="/privacy-policy">Privacy policy</a>
+                    <a href="/terms">Terms of service</a>
+                    <a href="/contact">Contact</a>
+                </div>
+            </div>
+
+            <!-- Right Column - Order Summary -->
+            <div class="order-summary">
+                <div class="order-item">
+                    <div class="item-image">
+                        🧢
+                        <div class="item-quantity">1</div>
+                    </div>
+                    <div class="item-details">
+                        <h4>2024 Lewis Hamilton Brazil GP Cap</h4>
+                        <p>Neon Yellow / OSFM / Adjustable fit</p>
+                    </div>
+                    <div class="item-price">$78.50</div>
+                </div>
+
+                <div class="discount-section">
+                    <div class="discount-input">
+                        <input type="text" class="form-input" placeholder="Discount code or gift card">
+                        <button class="apply-btn">Apply</button>
+                    </div>
+                </div>
+
+                <div class="order-totals">
+                    <div class="total-row">
+                        <span>Subtotal</span>
+                        <span>$78.50</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Shipping</span>
+                        <span>$2.32</span>
+                    </div>
+                    <div class="total-row final">
+                        <span>Total</span>
+                        <span><small>USD</small> $80.82</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Payment method selection
+        document.querySelectorAll('input[name="payment"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('.payment-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                this.closest('.payment-option').classList.add('selected');
+            });
+        });
+
+        // Shipping method selection
+        document.querySelectorAll('input[name="delivery"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('.shipping-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                this.closest('.shipping-option').classList.add('selected');
+            });
+        });
+
+        // Billing address selection
+        document.querySelectorAll('input[name="billing"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('.shipping-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                this.closest('.shipping-option').classList.add('selected');
+            });
+        });
+
+        // Pay button functionality
+        document.querySelector('.pay-button').addEventListener('click', function() {
+            const selectedPayment = document.querySelector('input[name="payment"]:checked').value;
+            
+            if (selectedPayment === 'intasend') {
+                alert('Redirecting to IntaSend payment gateway...');
+                // Here you would integrate with your actual payment processing
+            } else if (selectedPayment === 'cod') {
+                alert('Order placed successfully! Payment will be collected on delivery.');
+                // Process COD order
+            }
+        });
+    </script>
+</body>
+</html>

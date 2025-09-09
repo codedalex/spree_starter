@@ -1,0 +1,437 @@
+<!-- Card Payment Modal - Must be shown for card payments -->
+<div id="cardPaymentModal" class="payment-modal hidden" style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+">
+  <div class="modal-content" style="
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+  ">
+    <div class="modal-header" style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+    ">
+      <h2 style="
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0;
+      ">Enter Card Details</h2>
+      <button type="button" id="closeCardModal" style="
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #6b7280;
+        padding: 0.25rem;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+      ">&times;</button>
+    </div>
+
+    <form id="cardDetailsForm">
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label style="
+          display: block;
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #374151;
+          margin-bottom: 0.5rem;
+        ">Card Number *</label>
+        <input 
+          type="text" 
+          id="cardNumber" 
+          name="cardNumber"
+          placeholder="1234 5678 9012 3456" 
+          maxlength="19" 
+          required 
+          style="
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+          ">
+        <div class="card-icons" style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+          <span style="padding: 0.25rem 0.5rem; background: #f1f5f9; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">VISA</span>
+          <span style="padding: 0.25rem 0.5rem; background: #f1f5f9; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">MC</span>
+          <span style="padding: 0.25rem 0.5rem; background: #f1f5f9; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">AMEX</span>
+        </div>
+        <div class="error-message" id="cardNumberError" style="color: #ef4444; font-size: 0.875rem; margin-top: 0.5rem; display: none;"></div>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label style="
+          display: block;
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #374151;
+          margin-bottom: 0.5rem;
+        ">Cardholder Name *</label>
+        <input 
+          type="text" 
+          id="cardholderName" 
+          name="cardholderName"
+          placeholder="JOHN DOE" 
+          required 
+          style="
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-transform: uppercase;
+          ">
+        <div class="error-message" id="cardNameError" style="color: #ef4444; font-size: 0.875rem; margin-top: 0.5rem; display: none;"></div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label style="
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+          ">Expiry Date *</label>
+          <input 
+            type="text" 
+            id="expiryDate" 
+            name="expiryDate"
+            placeholder="MM/YY" 
+            maxlength="5" 
+            required 
+            style="
+              width: 100%;
+              padding: 0.875rem 1rem;
+              border: 2px solid #e5e7eb;
+              border-radius: 8px;
+              font-size: 1rem;
+              font-family: 'Courier New', monospace;
+            ">
+          <div class="error-message" id="expiryError" style="color: #ef4444; font-size: 0.875rem; margin-top: 0.5rem; display: none;"></div>
+        </div>
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label style="
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+          ">CVV *</label>
+          <input 
+            type="text" 
+            id="cvv" 
+            name="cvv"
+            placeholder="123" 
+            maxlength="4" 
+            required 
+            style="
+              width: 100%;
+              padding: 0.875rem 1rem;
+              border: 2px solid #e5e7eb;
+              border-radius: 8px;
+              font-size: 1rem;
+              font-family: 'Courier New', monospace;
+            ">
+          <div class="error-message" id="cvvError" style="color: #ef4444; font-size: 0.875rem; margin-top: 0.5rem; display: none;"></div>
+        </div>
+      </div>
+
+      <div style="
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1.5rem 0;
+        font-size: 0.875rem;
+        color: #0369a1;
+      ">
+        🔒 Your card information is encrypted and secure. This payment is processed by SasaPay.
+      </div>
+
+      <div id="cardProcessingLoader" style="display: none; text-align: center; margin: 1rem 0;">
+        <div style="
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          border: 2px solid #e5e7eb;
+          border-radius: 50%;
+          border-top-color: #3b82f6;
+          animation: spin 1s ease-in-out infinite;
+        "></div>
+        <p style="margin-top: 0.5rem;">Processing payment...</p>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+        <button 
+          type="button" 
+          id="cancelCardPayment" 
+          style="
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+          ">Cancel</button>
+        <button 
+          type="submit" 
+          id="submitCardPayment" 
+          style="
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: #3b82f6;
+            color: white;
+            border: none;
+          ">Pay Now</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.payment-modal.hidden {
+  display: none !important;
+}
+
+.payment-modal input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.payment-modal input.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.payment-modal button:hover {
+  opacity: 0.9;
+}
+
+.payment-modal button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+</style>
+
+<script>
+// CRITICAL: This script ensures card details are collected before payment processing
+
+window.CardPaymentModal = {
+  isOpen: false,
+  
+  // Show the modal - MUST be called before any card payment
+  show: function() {
+    console.log('CardPaymentModal: Showing modal for card details collection');
+    const modal = document.getElementById('cardPaymentModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      this.isOpen = true;
+      document.body.style.overflow = 'hidden';
+      
+      // Focus on first input
+      setTimeout(() => {
+        const firstInput = document.getElementById('cardNumber');
+        if (firstInput) firstInput.focus();
+      }, 100);
+    } else {
+      console.error('CardPaymentModal: Modal element not found!');
+    }
+  },
+  
+  // Hide the modal
+  hide: function() {
+    console.log('CardPaymentModal: Hiding modal');
+    const modal = document.getElementById('cardPaymentModal');
+    if (modal) {
+      modal.classList.add('hidden');
+      this.isOpen = false;
+      document.body.style.overflow = 'auto';
+      this.clearForm();
+    }
+  },
+  
+  // Clear form data
+  clearForm: function() {
+    const form = document.getElementById('cardDetailsForm');
+    if (form) {
+      form.reset();
+      document.querySelectorAll('.error-message').forEach(error => {
+        error.style.display = 'none';
+      });
+      document.querySelectorAll('input').forEach(input => {
+        input.classList.remove('error');
+      });
+    }
+  },
+  
+  // Get card data from form
+  getCardData: function() {
+    const cardNumber = document.getElementById('cardNumber')?.value.replace(/\s/g, '');
+    const cardholderName = document.getElementById('cardholderName')?.value.toUpperCase();
+    const expiryDate = document.getElementById('expiryDate')?.value;
+    const cvv = document.getElementById('cvv')?.value;
+    
+    if (!cardNumber || !cardholderName || !expiryDate || !cvv) {
+      throw new Error('All card fields are required');
+    }
+    
+    const expiryParts = expiryDate.split('/');
+    if (expiryParts.length !== 2) {
+      throw new Error('Invalid expiry date format');
+    }
+    
+    return {
+      card_number: cardNumber,
+      cardholder_name: cardholderName,
+      expiry_month: expiryParts[0],
+      expiry_year: '20' + expiryParts[1],
+      cvv: cvv
+    };
+  },
+  
+  // Validate card data
+  validateCardData: function(cardData) {
+    const errors = [];
+    
+    // Validate card number
+    if (!cardData.card_number || cardData.card_number.length < 13 || cardData.card_number.length > 19) {
+      errors.push('Invalid card number');
+    }
+    
+    // Validate expiry
+    const month = parseInt(cardData.expiry_month);
+    const year = parseInt(cardData.expiry_year);
+    const now = new Date();
+    const expiry = new Date(year, month - 1);
+    
+    if (month < 1 || month > 12 || year < now.getFullYear()) {
+      errors.push('Invalid or expired card');
+    }
+    
+    // Validate CVV
+    if (!cardData.cvv || cardData.cvv.length < 3 || cardData.cvv.length > 4) {
+      errors.push('Invalid CVV');
+    }
+    
+    // Validate name
+    if (!cardData.cardholder_name || cardData.cardholder_name.length < 2) {
+      errors.push('Cardholder name required');
+    }
+    
+    return errors;
+  }
+};
+
+// Card number formatting
+document.getElementById('cardNumber')?.addEventListener('input', function(e) {
+  let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+  let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+  if (value.length <= 16) {
+    e.target.value = formattedValue;
+  }
+});
+
+// Expiry date formatting
+document.getElementById('expiryDate')?.addEventListener('input', function(e) {
+  let value = e.target.value.replace(/\D/g, '');
+  if (value.length >= 2) {
+    value = value.substring(0,2) + '/' + value.substring(2,4);
+  }
+  e.target.value = value;
+});
+
+// CVV formatting
+document.getElementById('cvv')?.addEventListener('input', function(e) {
+  e.target.value = e.target.value.replace(/[^0-9]/g, '');
+});
+
+// Modal event listeners
+document.getElementById('closeCardModal')?.addEventListener('click', function() {
+  CardPaymentModal.hide();
+});
+
+document.getElementById('cancelCardPayment')?.addEventListener('click', function() {
+  CardPaymentModal.hide();
+});
+
+// Close modal when clicking outside
+document.getElementById('cardPaymentModal')?.addEventListener('click', function(e) {
+  if (e.target === this) {
+    CardPaymentModal.hide();
+  }
+});
+
+// CRITICAL: Form submission handler
+document.getElementById('cardDetailsForm')?.addEventListener('submit', function(e) {
+  e.preventDefault();
+  console.log('CardPaymentModal: Form submitted, collecting card data');
+  
+  try {
+    const cardData = CardPaymentModal.getCardData();
+    const errors = CardPaymentModal.validateCardData(cardData);
+    
+    if (errors.length > 0) {
+      alert('Card validation errors:\n' + errors.join('\n'));
+      return;
+    }
+    
+    // Show processing state
+    document.getElementById('cardProcessingLoader').style.display = 'block';
+    document.getElementById('submitCardPayment').disabled = true;
+    
+    // Call the global payment handler with card data
+    if (window.processCardPaymentWithData) {
+      console.log('CardPaymentModal: Calling processCardPaymentWithData with collected card data');
+      window.processCardPaymentWithData(cardData);
+    } else {
+      console.error('CardPaymentModal: processCardPaymentWithData function not found! Frontend integration incomplete.');
+      alert('Payment processing function not available. Please ensure proper frontend integration.');
+    }
+    
+  } catch (error) {
+    console.error('CardPaymentModal: Error processing card data:', error);
+    alert('Error: ' + error.message);
+  } finally {
+    // Hide processing state
+    document.getElementById('cardProcessingLoader').style.display = 'none';
+    document.getElementById('submitCardPayment').disabled = false;
+  }
+});
+
+console.log('CardPaymentModal: Initialized successfully');
+</script>

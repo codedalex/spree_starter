@@ -1,0 +1,101 @@
+<div class="card-payment-form" style="display: none;" id="card-form">
+  <div class="form-group">
+    <label for="card-number" class="form-label">Card Number</label>
+    <input type="text" id="card-number" class="form-input" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)">
+    <div class="card-icons">
+      <span class="card-icon">💳 VISA</span>
+      <span class="card-icon">💳 MC</span>
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label for="card-name" class="form-label">Cardholder Name</label>
+    <input type="text" id="card-name" class="form-input" placeholder="JOHN DOE">
+  </div>
+  
+  <div class="form-row">
+    <div class="form-group">
+      <label for="card-expiry" class="form-label">Expiry Date</label>
+      <input type="text" id="card-expiry" class="form-input" placeholder="MM/YY" maxlength="5" oninput="formatExpiryDate(this)">
+    </div>
+    <div class="form-group">
+      <label for="card-cvv" class="form-label">CVV</label>
+      <input type="text" id="card-cvv" class="form-input" placeholder="123" maxlength="4" oninput="formatCVV(this)">
+    </div>
+  </div>
+</div>
+
+<style>
+.card-payment-form {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin-top: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+}
+
+.card-icons {
+  margin-top: 0.5rem;
+}
+
+.card-icon {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-right: 1rem;
+}
+</style>
+
+<script>
+function formatCardNumber(input) {
+  let value = input.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+  let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+  if (value.length <= 16) {
+    input.value = formattedValue;
+  }
+}
+
+function formatExpiryDate(input) {
+  let value = input.value.replace(/\D/g, '');
+  if (value.length >= 2) {
+    value = value.substring(0,2) + '/' + value.substring(2,4);
+  }
+  input.value = value;
+}
+
+function formatCVV(input) {
+  input.value = input.value.replace(/[^0-9]/g, '');
+}
+</script>

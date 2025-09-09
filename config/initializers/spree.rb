@@ -55,6 +55,10 @@ end
 Rails.application.config.after_initialize do
   # Rails.application.config.spree.shipping_methods << Spree::ShippingMethods::SuperExpensiveNotVeryFastShipping
   # Rails.application.config.spree.payment_methods << Spree::PaymentMethods::VerySafeAndReliablePaymentMethod
+  
+  # Add custom payment methods
+  Rails.application.config.spree.payment_methods << Spree::PaymentMethod::CashOnDelivery
+  Rails.application.config.spree.payment_methods << Spree::PaymentMethod::Sasapay
 
   # Rails.application.config.spree.calculators.tax_rates << Spree::TaxRates::FinanceTeamForcedMeToCodeThis
 
