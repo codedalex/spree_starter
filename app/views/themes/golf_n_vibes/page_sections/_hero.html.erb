@@ -1,0 +1,451 @@
+<%
+  # Get theme settings using proper Spree theme helpers
+  golf_theme = if defined?(current_store) && current_store.present?
+                 current_store.themes.where(type: 'Spree::Themes::GolfNVibes').first
+               end
+  theme_helper = golf_theme || (respond_to?(:current_theme) ? current_theme : nil)
+  
+  config = {
+    title: (theme_helper&.preferred_hero_title.presence || 'Golf n Vibes'),
+    subtitle: theme_helper&.preferred_hero_subtitle.presence,
+    description: (theme_helper&.preferred_hero_description.presence || 'Experience the perfect blend of luxury golf and vibrant social experiences. Join us for unforgettable adventures on world-class courses.'),
+    badge: {
+      text: (theme_helper&.preferred_hero_badge_text.presence || 'Premium Golf Tours'),
+      enabled: (theme_helper&.preferred_hero_badge_enabled != false),
+      variant: (theme_helper&.preferred_hero_badge_variant.presence || 'default')
+    },
+    image: {
+      url: (theme_helper&.preferred_hero_image_url.presence || '/images/Qatar/poster.jpg'),
+      alt: (theme_helper&.preferred_hero_title.presence || 'Golf n Vibes')
+    },
+    layout: {
+      content_alignment: (theme_helper&.preferred_hero_content_alignment.presence || 'left'),
+      image_position: (theme_helper&.preferred_hero_image_position.presence || 'right'),
+      background_style: (theme_helper&.preferred_hero_background_style.presence || 'gradient'),
+      decorative_elements: (theme_helper&.preferred_hero_decorative_elements != false)
+    },
+    buttons: {
+      primary: {
+        text: (theme_helper&.preferred_hero_primary_button_text.presence || 'Current Event'),
+        url: (theme_helper&.preferred_hero_primary_button_url.presence || '/products')
+      },
+      secondary: {
+        text: (theme_helper&.preferred_hero_secondary_button_text.presence || 'Explore Past Events'),
+        url: (theme_helper&.preferred_hero_secondary_button_url.presence || '/products')
+      }
+    },
+    colors: {
+      primary: (theme_helper&.preferred_primary_color.presence || '#4A7856'),
+      accent: (theme_helper&.preferred_accent_color.presence || '#80be78'),
+      secondary: (theme_helper&.preferred_neutral_color.presence || '#6B7280')
+    }
+  }
+  
+  # Check if mobile (simplified)
+  is_mobile = request.user_agent =~ /Mobile|Android|iPhone|iPad/
+  
+  # Dynamic CSS custom properties for theme colors
+  css_vars = {
+    '--color-primary' => config[:colors][:primary],
+    '--color-accent' => config[:colors][:accent], 
+    '--color-secondary' => config[:colors][:secondary]
+  }.map { |k, v| "#{k}: #{v}" }.join('; ')
+  
+  # Layout classes based on configuration
+  content_order = config[:layout][:image_position] == 'right' ? (is_mobile ? 'order-2' : 'order-1') : (is_mobile ? 'order-1' : 'order-2')
+  image_order = config[:layout][:image_position] == 'right' ? (is_mobile ? 'order-1' : 'order-2') : (is_mobile ? 'order-2' : 'order-1')
+  
+  # Mobile layout override
+  mobile_content_order = 'order-2' # content-first by default
+  mobile_image_order = 'order-1'   # image-first by default
+  
+  text_alignment = if is_mobile
+                     'text-center'
+                   else
+                     case config[:layout][:content_alignment]
+                     when 'center' then 'text-center'
+                     when 'right' then 'text-right'
+                     else 'text-left'
+                     end
+                   end
+  
+  layout_classes = {
+    content: "#{is_mobile ? mobile_content_order : content_order} #{text_alignment}",
+    image: is_mobile ? mobile_image_order : image_order
+  }
+  
+  # Badge classes helper - using inline styles for compatibility
+  badge_classes = case config[:badge][:variant]
+                  when 'accent'
+                    'hero-badge'
+                  when 'outline'
+                    'hero-badge'
+                  else
+                    'hero-badge'
+                  end
+  
+  badge_styles = case config[:badge][:variant]
+                 when 'accent'
+                   "background-color: rgba(128, 190, 120, 0.2); border: 1px solid rgba(128, 190, 120, 0.3); color: #{config[:colors][:accent]};"
+                 when 'outline'
+                   "background-color: transparent; border: 2px solid #{config[:colors][:accent]}; color: #{config[:colors][:accent]};"
+                 else
+                   "background-color: rgba(128, 190, 120, 0.2); border: 1px solid rgba(128, 190, 120, 0.3); color: #{config[:colors][:primary]};"
+                 end
+%>
+
+<!-- Golf n Vibes Hero Section - Exact Next.js Match -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+  
+  .golf-hero {
+    font-family: 'Inter', sans-serif;
+    <%= css_vars.html_safe %>;
+    position: relative;
+    min-height: 80vh;
+    overflow: hidden;
+  }
+  
+  .golf-hero * {
+    box-sizing: border-box;
+  }
+  
+  /* Typography matching Next.js exactly */
+  .golf-hero .hero-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: #1f2937;
+    margin: 0 0 1.5rem 0;
+    letter-spacing: -0.02em;
+  }
+  
+  .golf-hero .hero-description {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    line-height: 1.6;
+    color: #4b5563;
+    margin: 0 0 2rem 0;
+    max-width: 600px;
+  }
+  
+  /* Badge styling - matching Next.js exactly */
+  .golf-hero .hero-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: rgba(156, 163, 175, 0.1);
+    border: 1px solid rgba(156, 163, 175, 0.2);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(8px);
+  }
+  
+  /* Button styling - exact match */
+  .golf-hero .hero-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    background: <%= config[:colors][:accent] %>;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 50px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 14px 0 rgba(128, 190, 120, 0.3);
+    margin-right: 1rem;
+  }
+  
+  .golf-hero .hero-btn-primary:hover {
+    background: #6aa85e;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px 0 rgba(128, 190, 120, 0.4);
+    text-decoration: none;
+    color: white;
+  }
+  
+  .golf-hero .hero-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    background: transparent;
+    color: #4b5563;
+    font-weight: 600;
+    font-size: 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 50px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .golf-hero .hero-btn-outline:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+    text-decoration: none;
+    color: #374151;
+  }
+  
+  /* Layout containers */
+  .golf-hero .hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 20;
+  }
+  
+  .golf-hero .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .golf-hero .hero-content {
+    padding-right: 2rem;
+  }
+  
+  .golf-hero .hero-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  
+  /* Image container - matching Next.js exactly */
+  .golf-hero .hero-image-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  /* Background decorative elements behind image */
+  .golf-hero .hero-image-bg-1 {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(128, 190, 120, 0.15), rgba(74, 120, 86, 0.15));
+    border-radius: 24px;
+    transform: rotate(-3deg) scale(0.95);
+  }
+  
+  .golf-hero .hero-image-bg-2 {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, rgba(128, 190, 120, 0.1), rgba(74, 120, 86, 0.1));
+    border-radius: 24px;
+    transform: rotate(3deg) scale(0.95);
+  }
+  
+  /* Main image */
+  .golf-hero .hero-image {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    transform: rotate(1deg);
+    transition: transform 0.5s ease;
+  }
+  
+  .golf-hero .hero-image:hover {
+    transform: rotate(0deg);
+  }
+  
+  .golf-hero .hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    padding: 8px;
+    border-radius: 16px;
+  }
+  
+  /* Golf ball decoration */
+  .golf-hero .golf-ball-decoration {
+    position: absolute;
+    bottom: -16px;
+    right: -16px;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, <%= config[:colors][:accent] %>, #6aa85e);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 8px 32px rgba(128, 190, 120, 0.3);
+    transition: transform 0.3s ease;
+  }
+  
+  .golf-hero .golf-ball-decoration:hover {
+    transform: scale(1.1);
+  }
+  
+  .golf-hero .golf-ball-decoration svg {
+    width: 32px;
+    height: 32px;
+  }
+  
+  /* Background pattern - matching Next.js */
+  .golf-hero .hero-background {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    z-index: 1;
+  }
+  
+  .golf-hero .hero-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.6;
+    background-image: radial-gradient(circle at 2px 2px, rgba(128, 190, 120, 0.25) 1px, transparent 0);
+    background-size: 40px 40px;
+    z-index: 2;
+  }
+  
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .golf-hero .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      text-align: center;
+    }
+    
+    .golf-hero .hero-content {
+      padding-right: 0;
+      order: 2;
+    }
+    
+    .golf-hero .hero-image-container {
+      order: 1;
+      max-width: 300px;
+    }
+    
+    .golf-hero .hero-title {
+      font-size: 2.5rem;
+    }
+    
+    .golf-hero .hero-description {
+      font-size: 1.25rem;
+    }
+    
+    .golf-hero .hero-buttons {
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .golf-hero .hero-btn-primary,
+    .golf-hero .hero-btn-outline {
+      width: 100%;
+      max-width: 280px;
+      margin-right: 0;
+    }
+  }
+</style>
+
+<section class="golf-hero">
+  <!-- Background -->
+  <div class="hero-background"></div>
+  <div class="hero-pattern"></div>
+  
+  <!-- Main Content -->
+  <div class="hero-container">
+    <div class="hero-grid">
+      <!-- Content Side -->
+      <div class="hero-content">
+        <!-- Badge -->
+        <% if config[:badge][:enabled] %>
+          <div class="hero-badge">
+            <%= config[:badge][:text] %>
+          </div>
+        <% end %>
+        
+        <!-- Title -->
+        <h1 class="hero-title">
+          <%= config[:title] %>
+        </h1>
+        
+        <!-- Subtitle (if exists) -->
+        <% if config[:subtitle].present? %>
+          <h2 class="hero-subtitle">
+            <%= config[:subtitle] %>
+          </h2>
+        <% end %>
+        
+        <!-- Description -->
+        <p class="hero-description">
+          <%= simple_format(config[:description]) %>
+        </p>
+        
+        <!-- Action Buttons -->
+        <div class="hero-buttons">
+          <% if config[:buttons][:primary][:text].present? && config[:buttons][:primary][:url].present? %>
+            <%= link_to config[:buttons][:primary][:url], class: 'hero-btn-primary' do %>
+              <span><%= config[:buttons][:primary][:text] %></span>
+              <svg style="margin-left: 8px; width: 20px; height: 20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            <% end %>
+          <% end %>
+          
+          <% if config[:buttons][:secondary][:text].present? && config[:buttons][:secondary][:url].present? %>
+            <%= link_to config[:buttons][:secondary][:url], class: 'hero-btn-outline' do %>
+              <span><%= config[:buttons][:secondary][:text] %></span>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+      
+      <!-- Image Side -->
+      <div class="hero-image-container">
+        <!-- Background decorative elements -->
+        <div class="hero-image-bg-1"></div>
+        <div class="hero-image-bg-2"></div>
+        
+        <!-- Main image -->
+        <div class="hero-image">
+          <% if config[:image][:url].present? %>
+            <img src="<%= config[:image][:url] %>" alt="<%= config[:image][:alt] %>" />
+          <% else %>
+            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, rgba(128, 190, 120, 0.2), rgba(74, 120, 86, 0.2)); display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 16px;">
+              <div style="text-align: center;">
+                <svg style="width: 96px; height: 96px; color: rgba(128, 190, 120, 0.4); margin: 0 auto 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <p style="color: rgba(128, 190, 120, 0.6); font-size: 14px;">Add Hero Image</p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        
+        <!-- Golf ball decoration -->
+        <% if config[:layout][:decorative_elements] %>
+          <div class="golf-ball-decoration">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 3v19M3 15h18M3 8h18M12 22c0-3.314 2.686-6 6-6s6 2.686 6 6" />
+            </svg>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

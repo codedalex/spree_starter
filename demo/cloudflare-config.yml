@@ -1,0 +1,17 @@
+tunnel: golf-n-vibes-demo
+credentials-file: C:\projects\golf_n_vibes\spree-official\demo\credentials.json
+
+ingress:
+  # Spree Commerce Backend (Admin + Storefront)
+  - hostname: golf-spree-demo.your-domain.com
+    service: http://localhost:3000
+  
+  # Next.js Frontend
+  - hostname: golf-nextjs-demo.your-domain.com
+    service: http://localhost:3001
+    
+  # Catch-all rule (required)
+  - service: http_status:404
+
+# Optional: Enable metrics
+metrics: 0.0.0.0:2000

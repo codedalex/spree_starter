@@ -73,6 +73,6 @@ Rails.application.routes.draw do
   # Custom health check endpoint for production monitoring
   get "health" => "health#show", as: :health_check
 
-  # Defines the root path route ("/") - redirect to admin for headless setup
-  root "spree/admin/orders#index"
+  # Defines the root path route ("/") - Golf n Vibes storefront homepage
+  root "spree/home#index"
 end
