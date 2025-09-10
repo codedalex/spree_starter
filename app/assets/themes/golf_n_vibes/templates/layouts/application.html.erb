@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>" class="<%= theme_setting('content_alignment') %>">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= content_for?(:title) ? yield(:title) : current_store.seo_title %></title>
+    <meta name="description" content="<%= current_store.meta_description %>" />
+    <meta name="keywords" content="<%= current_store.meta_keywords %>" />
+    
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <!-- Favicon -->
+    <%= favicon_link_tag %>
+    
+    <!-- Stylesheets -->
+    <%= stylesheet_link_tag 'golf_n_vibes/application', 'data-turbo-track': 'reload' %>
+    
+    <!-- Custom CSS from theme settings -->
+    <style>
+      :root {
+        --primary-color: <%= theme_setting('primary_color') || '#4A7856' %>;
+        --accent-color: <%= theme_setting('accent_color') || '#80be78' %>;
+        --secondary-color: <%= theme_setting('secondary_color') || '#6B7280' %>;
+        --heading-font: <%= theme_setting('heading_font') || 'system-ui' %>;
+        --body-font: <%= theme_setting('body_font') || 'system-ui' %>;
+      }
+      
+      body {
+        font-family: var(--body-font);
+      }
+      
+      h1, h2, h3, h4, h5, h6 {
+        font-family: var(--heading-font);
+      }
+      
+      .text-primary { color: var(--primary-color); }
+      .text-accent { color: var(--accent-color); }
+      .text-secondary { color: var(--secondary-color); }
+      .bg-primary { background-color: var(--primary-color); }
+      .bg-accent { background-color: var(--accent-color); }
+      .bg-secondary { background-color: var(--secondary-color); }
+    </style>
+    
+    <!-- JavaScript -->
+    <%= javascript_importmap_tags %>
+    <%= javascript_include_tag 'golf_n_vibes/application', 'data-turbo-track': 'reload' %>
+    
+    <!-- Additional head content -->
+    <%= yield :head %>
+  </head>
+
+  <body class="<%= body_class %> bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 bg-accent text-white px-4 py-2 rounded-br-md z-50">
+      Skip to main content
+    </a>
+    
+    <!-- Main Navigation -->
+    <%= render 'shared/navigation' %>
+    
+    <!-- Flash messages -->
+    <% if flash.any? %>
+      <div id="flash-messages" class="fixed top-4 right-4 z-40 space-y-2">
+        <% flash.each do |type, message| %>
+          <div class="flash-message flash-<%= type %> bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 max-w-sm">
+            <div class="flex items-start">
+              <div class="flex-shrink-0">
+                <% case type.to_s %>
+                <% when 'notice', 'success' %>
+                  <svg class="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                <% when 'alert', 'error' %>
+                  <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                <% else %>
+                  <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                <% end %>
+              </div>
+              <div class="ml-3 flex-1">
+                <p class="text-sm text-gray-700 dark:text-gray-300"><%= message %></p>
+              </div>
+              <div class="ml-4 flex-shrink-0">
+                <button type="button" class="flash-close text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" onclick="this.closest('.flash-message').remove()">
+                  <span class="sr-only">Close</span>
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+    
+    <!-- Main Content -->
+    <main id="main-content" role="main">
+      <%= yield %>
+    </main>
+    
+    <!-- Footer -->
+    <%= render 'shared/footer' %>
+    
+    <!-- Shopping Cart Sidebar (if applicable) -->
+    <%= render 'shared/cart_sidebar' if defined?(current_order) && current_order&.line_items&.any? %>
+    
+    <!-- Additional body content -->
+    <%= yield :body %>
+    
+    <!-- Analytics and tracking codes -->
+    <%= render 'shared/analytics' if Rails.env.production? %>
+  </body>
+</html>

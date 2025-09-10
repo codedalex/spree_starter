@@ -40,9 +40,23 @@ module SpreeStarter
     # Configure CORS for headless API access
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins 'localhost:3000', '127.0.0.1:3000', 'http://localhost:3000', 'http://127.0.0.1:3000',
-                'localhost:3001', '127.0.0.1:3001', 'http://localhost:3001', 'http://127.0.0.1:3001'
-        resource '/api/*', headers: :any, methods: [:get, :post, :put, :patch, :delete, :options, :head]
+        # Development origins
+        dev_origins = ['localhost:3000', '127.0.0.1:3000', 'http://localhost:3000', 'http://127.0.0.1:3000',
+                      'localhost:3001', '127.0.0.1:3001', 'http://localhost:3001', 'http://127.0.0.1:3001']
+        
+        # Production origins
+        prod_origins = ['https://golfnvibes.com', 'https://www.golfnvibes.com', 'https://golf-n-vibes.vercel.app']
+        
+        # Add custom origins from environment variable
+        custom_origins = ENV.fetch('CORS_ORIGINS', '').split(',').map(&:strip).reject(&:empty?)
+        
+        all_origins = dev_origins + prod_origins + custom_origins
+        
+        origins(*all_origins)
+        resource '/api/*', 
+          headers: :any, 
+          methods: [:get, :post, :put, :patch, :delete, :options, :head],
+          credentials: true
       end
     end
   end

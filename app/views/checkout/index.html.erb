@@ -567,9 +567,36 @@
                                 </div>
                             </div>
                             <div class="payment-form">
-                                <p style="text-align: center; color: #64748b; margin: 1rem 0;">
-                                    After clicking "Pay now", you will be redirected to IntaSend (Pay with Card and M-Pesa) to complete your purchase securely.
-                                </p>
+                                <div class="card-form">
+                                    <div class="form-group">
+                                        <label class="form-label" for="card-number">Card Number *</label>
+                                        <input type="text" id="card-number" class="form-input" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                                        <div class="card-icons" style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
+                                            <div style="width: 32px; height: 20px; background: #1e293b; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600;">VISA</div>
+                                            <div style="width: 32px; height: 20px; background: #1e293b; color: white; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600;">MC</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="card-name">Cardholder Name *</label>
+                                        <input type="text" id="card-name" class="form-input" placeholder="JOHN DOE" required style="text-transform: uppercase;">
+                                    </div>
+                                    
+                                    <div class="card-row">
+                                        <div class="form-group">
+                                            <label class="form-label" for="card-expiry">Expiry Date *</label>
+                                            <input type="text" id="card-expiry" class="form-input" placeholder="MM/YY" maxlength="5" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="card-cvv">CVV *</label>
+                                            <input type="text" id="card-cvv" class="form-input" placeholder="123" maxlength="4" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 1rem; margin-top: 1rem; font-size: 0.875rem; color: #0369a1;">
+                                        🔒 Your payment is secure and encrypted. Card payments are processed through SasaPay.
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

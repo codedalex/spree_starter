@@ -1,0 +1,9 @@
+# Add this to your config/routes.rb file
+
+Spree::Core::Engine.routes.draw do
+  namespace :admin do
+    resource :golf_n_vibes, only: [:show, :update], controller: 'golf_n_vibes' do
+      get :preview, on: :member
+    end
+  end
+end

@@ -78,7 +78,7 @@ Rails.application.config.after_initialize do
   # Rails.application.config.spree.reports << Spree::Reports::MassivelyOvercomplexReportForCfo
 
   # Themes and page builder
-  # Rails.application.config.spree.themes << Spree::Themes::NewShinyTheme
+  Rails.application.config.spree.themes << Spree::Themes::GolfNVibes
   # Rails.application.config.spree.theme_layout_sections << Spree::PageSections::SuperImportantCeoBio
   # Rails.application.config.spree.page_sections << Spree::PageSections::ContactFormToGetInTouch
   # Rails.application.config.spree.page_blocks << Spree::PageBlocks::BigRedButtonToCallSales

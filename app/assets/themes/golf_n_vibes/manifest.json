@@ -1,0 +1,194 @@
+{
+  "name": "Golf n Vibes",
+  "version": "1.0.0",
+  "description": "Premium golf tour website theme with customizable hero section and luxury golf experiences showcase",
+  "author": "Golf n Vibes Team",
+  "homepage": "https://golfnvibes.com",
+  "tags": ["golf", "luxury", "tours", "sports", "premium"],
+  "screenshot": "screenshot.png",
+  "preview_images": [
+    "preview-1.png",
+    "preview-2.png",
+    "preview-3.png"
+  ],
+  "settings": {
+    "hero_section": {
+      "title": {
+        "type": "text",
+        "label": "Hero Title",
+        "default": "Golf n Vibes",
+        "description": "Main heading displayed in the hero section"
+      },
+      "subtitle": {
+        "type": "text",
+        "label": "Hero Subtitle",
+        "default": "",
+        "description": "Optional subtitle below the main title"
+      },
+      "description": {
+        "type": "textarea",
+        "label": "Hero Description",
+        "default": "Experience the perfect blend of luxury golf and vibrant social experiences. Join us for unforgettable adventures on world-class courses.",
+        "description": "Description text in the hero section"
+      },
+      "badge_text": {
+        "type": "text",
+        "label": "Badge Text",
+        "default": "Premium Golf Tours",
+        "description": "Text displayed in the hero badge"
+      },
+      "badge_enabled": {
+        "type": "boolean",
+        "label": "Show Badge",
+        "default": true,
+        "description": "Show or hide the hero badge"
+      },
+      "badge_variant": {
+        "type": "select",
+        "label": "Badge Style",
+        "default": "default",
+        "options": [
+          { "value": "default", "label": "Default" },
+          { "value": "accent", "label": "Accent" },
+          { "value": "outline", "label": "Outline" }
+        ],
+        "description": "Visual style of the hero badge"
+      },
+      "hero_image": {
+        "type": "image",
+        "label": "Hero Image",
+        "default": "/images/Qatar/poster.jpg",
+        "description": "Main image displayed in the hero section"
+      },
+      "content_alignment": {
+        "type": "select",
+        "label": "Content Alignment",
+        "default": "left",
+        "options": [
+          { "value": "left", "label": "Left" },
+          { "value": "center", "label": "Center" },
+          { "value": "right", "label": "Right" }
+        ],
+        "description": "Text alignment in the hero section"
+      },
+      "image_position": {
+        "type": "select",
+        "label": "Image Position",
+        "default": "right",
+        "options": [
+          { "value": "left", "label": "Left" },
+          { "value": "right", "label": "Right" }
+        ],
+        "description": "Position of the hero image"
+      },
+      "background_style": {
+        "type": "select",
+        "label": "Background Style",
+        "default": "gradient",
+        "options": [
+          { "value": "gradient", "label": "Gradient" },
+          { "value": "pattern", "label": "Pattern" },
+          { "value": "solid", "label": "Solid Color" },
+          { "value": "image", "label": "Background Image" }
+        ],
+        "description": "Background styling for the hero section"
+      },
+      "decorative_elements": {
+        "type": "boolean",
+        "label": "Show Decorative Elements",
+        "default": true,
+        "description": "Show golf-themed decorative elements"
+      },
+      "primary_button_text": {
+        "type": "text",
+        "label": "Primary Button Text",
+        "default": "Current Event",
+        "description": "Text for the primary call-to-action button"
+      },
+      "primary_button_url": {
+        "type": "url",
+        "label": "Primary Button URL",
+        "default": "/events/doha-tour",
+        "description": "Link destination for the primary button"
+      },
+      "secondary_button_text": {
+        "type": "text",
+        "label": "Secondary Button Text",
+        "default": "Explore Past Events",
+        "description": "Text for the secondary button"
+      },
+      "secondary_button_url": {
+        "type": "url",
+        "label": "Secondary Button URL",
+        "default": "/past-events",
+        "description": "Link destination for the secondary button"
+      }
+    },
+    "colors": {
+      "primary_color": {
+        "type": "color",
+        "label": "Primary Color",
+        "default": "#4A7856",
+        "description": "Main brand color used throughout the theme"
+      },
+      "accent_color": {
+        "type": "color",
+        "label": "Accent Color",
+        "default": "#80be78",
+        "description": "Accent color for highlights and buttons"
+      },
+      "secondary_color": {
+        "type": "color",
+        "label": "Secondary Color",
+        "default": "#6B7280",
+        "description": "Secondary text and element color"
+      }
+    },
+    "typography": {
+      "heading_font": {
+        "type": "font",
+        "label": "Heading Font",
+        "default": "system-ui",
+        "description": "Font family for headings"
+      },
+      "body_font": {
+        "type": "font",
+        "label": "Body Font",
+        "default": "system-ui",
+        "description": "Font family for body text"
+      }
+    }
+  },
+  "blocks": [
+    {
+      "type": "hero",
+      "name": "Hero Section",
+      "settings": ["hero_section"]
+    },
+    {
+      "type": "about",
+      "name": "About Section",
+      "settings": []
+    },
+    {
+      "type": "past_events",
+      "name": "Past Events",
+      "settings": []
+    },
+    {
+      "type": "cta",
+      "name": "Call to Action",
+      "settings": []
+    }
+  ],
+  "templates": [
+    {
+      "name": "index",
+      "blocks": ["hero", "about", "past_events", "cta"]
+    },
+    {
+      "name": "product",
+      "blocks": ["hero"]
+    }
+  ]
+}
