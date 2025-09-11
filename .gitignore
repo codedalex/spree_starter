@@ -7,6 +7,9 @@
 # Ignore bundler config.
 /.bundle
 
+# Ignore vendor/bundle (gems should not be committed)
+/vendor/bundle
+
 # Ignore all environment files (except templates).
 /.env*
 !/.env*.erb
