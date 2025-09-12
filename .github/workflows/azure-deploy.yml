@@ -45,7 +45,9 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         push: true
-        tags: ${{ secrets.REGISTRY_LOGIN_SERVER }}/spree-golf:${{ github.sha }}
+        tags: |
+          ${{ secrets.REGISTRY_LOGIN_SERVER }}/spree-golf:${{ github.sha }}
+          ${{ secrets.REGISTRY_LOGIN_SERVER }}/spree-golf:latest
         file: ./Dockerfile
         context: .
 
@@ -60,7 +62,7 @@ jobs:
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         slot-name: 'production'
-        images: ${{ secrets.REGISTRY_LOGIN_SERVER }}/spree-golf:${{ github.sha }}
+        images: ${{ secrets.REGISTRY_LOGIN_SERVER }}/spree-golf:latest
 
     - name: Configure Web App Environment
       run: |
