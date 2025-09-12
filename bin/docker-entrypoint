@@ -9,6 +9,7 @@ if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   
   # Load Spree sample data if it doesn't exist yet
   # Check if admin user exists, if not, load sample data
+  echo "Checking for existing admin users..."
   if ! ./bin/rails runner "puts Spree::User.exists?" 2>/dev/null | grep -q "true"; then
     echo "Loading Spree sample data for Golf N Vibes store..."
     ./bin/rails spree_sample:load 2>/dev/null || echo "Sample data loading completed or skipped"

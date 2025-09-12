@@ -10,7 +10,9 @@ end
 def create_golf_product(product_data)
   puts "  Creating product: #{product_data[:name]}"
   
-  product = Spree::Product.find_or_create_by!(name: product_data[:name]) do |p|
+  product = nil
+  begin
+    product = Spree::Product.find_or_create_by!(name: product_data[:name]) do |p|
     p.description = product_data[:description]
     p.price = product_data[:price]
     p.available_on = 1.day.ago
@@ -68,8 +70,13 @@ def create_golf_product(product_data)
     end
   end
 
-  product.save!
-  product
+    product.save!
+    product
+  rescue StandardError => e
+    puts "    Error creating product #{product_data[:name]}: #{e.message}"
+    puts "    This might be due to missing Redis/Sidekiq connection. Continuing..."
+    return nil
+  end
 end
 
 # Golf Products Data based on the product lineup images

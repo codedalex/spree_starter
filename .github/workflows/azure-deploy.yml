@@ -71,6 +71,13 @@ jobs:
           SECRET_KEY_BASE="${{ secrets.SECRET_KEY_BASE }}" \
           RAILS_SERVE_STATIC_FILES=true \
           RAILS_LOG_TO_STDOUT=true \
+          DATABASE_URL="postgresql://golfadmin:GolfNVibes2024!@golf-n-vibes-postgres.postgres.database.azure.com:5432/golfnvibes_production?sslmode=require" \
+          DATABASE_HOST=golf-n-vibes-postgres.postgres.database.azure.com \
+          DATABASE_NAME=golfnvibes_production \
+          DATABASE_USERNAME=golfadmin \
+          DATABASE_PASSWORD=GolfNVibes2024! \
+          DATABASE_PORT=5432 \
+          DATABASE_SSLMODE=require \
           SPREE_ADMIN_EMAIL=admin@golfnvibes.com \
           SPREE_ADMIN_PASSWORD=GolfNVibes2024! \
           STORE_NAME="Golf N Vibes" \
