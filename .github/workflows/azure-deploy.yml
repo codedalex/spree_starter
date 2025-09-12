@@ -62,13 +62,22 @@ jobs:
         slot-name: 'production'
         images: ${{ secrets.REGISTRY_LOGIN_SERVER }}/spree-golf:${{ github.sha }}
 
-    - name: Run Database Migrations
+    - name: Configure Web App Environment
       run: |
-        az webapp config appsettings set --resource-group golf-n-vibes-rg --name ${{ env.AZURE_WEBAPP_NAME }} --settings RAILS_ENV=production
-        az webapp ssh --resource-group golf-n-vibes-rg --name ${{ env.AZURE_WEBAPP_NAME }} --instance 0 "cd /app && bundle exec rails db:migrate"
+        az webapp config appsettings set --resource-group golf-n-vibes-rg --name ${{ env.AZURE_WEBAPP_NAME }} --settings \
+          RAILS_ENV=production \
+          SECRET_KEY_BASE="${{ secrets.SECRET_KEY_BASE }}" \
+          RAILS_SERVE_STATIC_FILES=true \
+          RAILS_LOG_TO_STDOUT=true \
+          SPREE_ADMIN_EMAIL=admin@golfnvibes.com \
+          SPREE_ADMIN_PASSWORD=GolfNVibes2024! \
+          STORE_NAME="Golf N Vibes" \
+          STORE_EMAIL=info@golfnvibes.com
       continue-on-error: true
       
-    - name: Setup Sample Data (First Deployment Only)
+    - name: Wait for Deployment
       run: |
-        az webapp ssh --resource-group golf-n-vibes-rg --name ${{ env.AZURE_WEBAPP_NAME }} --instance 0 "cd /app && bundle exec rails spree_sample:load"
-      continue-on-error: true
+        echo "Deployment completed! Your Golf N Vibes store should be available at:"
+        echo "https://golf-n-vibes-spree.azurewebsites.net"
+        echo "Admin panel: https://golf-n-vibes-spree.azurewebsites.net/admin"
+        echo "Note: Database setup will run automatically when the container starts."

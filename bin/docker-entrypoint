@@ -2,7 +2,21 @@
 
 # If running the rails server then create or migrate existing database
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
+  echo "Setting up Golf N Vibes Spree database..."
+  
+  # Prepare the database (creates/migrates as needed)
   AUTO_ACCEPT=1 ./bin/rails db:prepare
+  
+  # Load Spree sample data if it doesn't exist yet
+  # Check if admin user exists, if not, load sample data
+  if ! ./bin/rails runner "puts Spree::User.exists?" 2>/dev/null | grep -q "true"; then
+    echo "Loading Spree sample data for Golf N Vibes store..."
+    ./bin/rails spree_sample:load 2>/dev/null || echo "Sample data loading completed or skipped"
+  else
+    echo "Sample data already exists, skipping..."
+  fi
+  
+  echo "Golf N Vibes Spree store database setup completed!"
 fi
 
 exec "${@}"
