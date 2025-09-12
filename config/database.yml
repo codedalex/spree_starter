@@ -97,4 +97,10 @@ test:
 #
 production:
   <<: *default
+  database: golfnvibes_production
+  host: golf-n-vibes-db-swiss.postgres.database.azure.com
+  username: golfadmin
+  password: GolfNVibes2024!
+  port: 5432
+  sslmode: require
   url: <%= ENV['DATABASE_URL'] %>
