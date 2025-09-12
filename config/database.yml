@@ -97,10 +97,11 @@ test:
 #
 production:
   <<: *default
-  database: golfnvibes_production
-  host: golf-n-vibes-db-swiss.postgres.database.azure.com
-  username: golfadmin
-  password: GolfNVibes2024!
-  port: 5432
-  sslmode: require
   url: <%= ENV['DATABASE_URL'] %>
+  # Fallback configuration if DATABASE_URL is not available
+  database: <%= ENV.fetch('DATABASE_NAME', 'golfnvibes_production') %>
+  host: <%= ENV.fetch('DATABASE_HOST', 'golf-n-vibes-db-swiss.postgres.database.azure.com') %>
+  username: <%= ENV.fetch('DATABASE_USERNAME', 'golfadmin') %>
+  password: <%= ENV.fetch('DATABASE_PASSWORD', 'GolfNVibes2024!') %>
+  port: <%= ENV.fetch('DATABASE_PORT', 5432) %>
+  sslmode: <%= ENV.fetch('DATABASE_SSLMODE', 'require') %>
