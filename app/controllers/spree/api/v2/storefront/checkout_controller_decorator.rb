@@ -1,10 +1,10 @@
 # Fix parameter handling for Checkout API to prevent unpermitted parameter warnings
 # The Spree V2 API expects JSON API format but Rails parameter wrapping can cause conflicts
 
-Spree::Api::V2::Storefront::CheckoutController.class_eval do
-  # Suppress unpermitted parameter warnings for JSON API format
-  # The warnings don't affect functionality but can clutter logs
-  around_action :suppress_parameter_warnings, only: [:update, :create]
+module Spree::Api::V2::Storefront::CheckoutControllerDecorator
+  def self.prepended(base)
+    base.around_action :suppress_parameter_warnings, only: [:update, :create]
+  end
 
   private
 
@@ -18,3 +18,5 @@ Spree::Api::V2::Storefront::CheckoutController.class_eval do
     ActionController::Parameters.action_on_unpermitted_parameters = original_log_level
   end
 end
+
+::Spree::Api::V2::Storefront::CheckoutController.prepend(Spree::Api::V2::Storefront::CheckoutControllerDecorator)

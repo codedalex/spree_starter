@@ -1,7 +1,7 @@
 # Fix pagination parameter issues for Spree API
 # This decorator handles the parameter format mismatch between frontend and Kaminari
 
-Spree::Api::V2::Storefront::ProductsController.class_eval do
+module Spree::Api::V2::Storefront::ProductsControllerDecorator
   private
   
   # Override the page method to extract page number correctly
@@ -32,3 +32,5 @@ Spree::Api::V2::Storefront::ProductsController.class_eval do
     end
   end
 end
+
+::Spree::Api::V2::Storefront::ProductsController.prepend(Spree::Api::V2::Storefront::ProductsControllerDecorator)
