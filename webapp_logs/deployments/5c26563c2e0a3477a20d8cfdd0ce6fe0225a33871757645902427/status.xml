@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<deployment>
+  <id>5c26563c2e0a3477a20d8cfdd0ce6fe0225a33871757645902427</id>
+  <author>codedalex</author>
+  <deployer>GitHub</deployer>
+  <authorEmail />
+  <message>{"type":"Deployment","sha":"5c26563c2e0a3477a20d8cfdd0ce6fe0225a3387","repoName":"codedalex/spree_starter","actor":"codedalex","slotName":"production"}</message>
+  <progress />
+  <status>Success</status>
+  <statusText />
+  <lastSuccessEndTime>2025-09-12T02:58:25.1001228Z</lastSuccessEndTime>
+  <receivedTime>2025-09-12T02:58:25.1001228Z</receivedTime>
+  <startTime>2025-09-12T02:58:25.1001228Z</startTime>
+  <endTime>2025-09-12T02:58:25.1001228Z</endTime>
+  <complete>True</complete>
+  <is_temp>False</is_temp>
+  <is_readonly>True</is_readonly>
+  <project_type></project_type>
+  <vsproject_id></vsproject_id>
+</deployment>

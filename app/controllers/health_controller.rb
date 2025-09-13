@@ -1,4 +1,4 @@
-class HealthController < ApplicationController
+class HealthController < ActionController::Base
   # Skip authentication for health checks
   skip_before_action :verify_authenticity_token
   

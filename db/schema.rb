@@ -11,8 +11,8 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.0].define(version: 2025_09_05_000001) do
-  # Extensions are enabled at the database level in Azure PostgreSQL
-  # plpgsql and pg_trgm are already enabled
+  # These extensions are not supported in Azure Database for PostgreSQL
+  # We'll comment them out and rely on the database schema without them
 
   create_table "action_mailbox_inbound_emails", force: :cascade do |t|
     t.integer "status", default: 0, null: false

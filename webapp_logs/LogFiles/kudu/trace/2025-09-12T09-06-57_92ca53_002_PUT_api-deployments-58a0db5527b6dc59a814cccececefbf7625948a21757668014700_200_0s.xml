@@ -1,0 +1,10 @@
+<step title="Incoming Request" date="2025-09-12T09:06:57.085" instance="92ca53" url="/api/deployments/58a0db5527b6dc59a814cccececefbf7625948a21757668014700" method="PUT" type="request" pid="10960,2,8" Connection="Keep-Alive" Content-Length="312" Content-Type="application/json; charset=utf-8" Authorization="Bea..." Host="golf-n-vibes-spree.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_4ecb4ab1cbb8eb2e83bf90da032e16866c1f1a44d703668eebe37f8dd2a57d9c" X-ARR-LOG-ID="0cac6c58-02f0-49c5-b10f-59bd41ca1a3f" CLIENT-IP="64.236.192.151:18432" X-SITE-DEPLOYMENT-ID="golf-n-vibes-spree" WAS-DEFAULT-HOSTNAME="golf-n-vibes-spree.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments/58a0db5527b6dc59a814cccececefbf7625948a21757668014700" X-MS-COLDSTART="1" >
+  <step title="DeploymentService.Deploy(id)" date="2025-09-12T09:06:57.304" >
+    <step title="Updating shutdown sentinel last write time" date="2025-09-12T09:06:57.335" SemaphoreCount="7" /><!-- duration: 0ms -->
+    <step title="LockFile &apos;C:\home\site\locks\deployments.lock&apos; acquired" date="2025-09-12T09:06:57.351" /><!-- duration: 0ms -->
+    <step title="DeploymentService.Create(id)" date="2025-09-12T09:06:57.351" /><!-- duration: 63ms -->
+    <step title="LockFile &apos;C:\home\site\locks\deployments.lock&apos; released" date="2025-09-12T09:06:57.413" /><!-- duration: 16ms -->
+    <step title="Deleting shutdown sentinel file" date="2025-09-12T09:06:57.429" SemaphoreCount="8" /><!-- duration: 0ms -->
+  </step><!-- duration: 125ms -->
+  <step title="Outgoing response" date="2025-09-12T09:06:57.460" type="response" statusCode="200" statusText="OK" Server="Microsoft-IIS/10.0" x-ms-request-id="0cac6c58-02f0-49c5-b10f-59bd41ca1a3f" Cache-Control="private" X-AspNet-Version="4.0.30319" Content-Type="application/json; charset=utf-8" /><!-- duration: 0ms -->
+</step><!-- duration: 391ms -->
