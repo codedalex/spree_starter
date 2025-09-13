@@ -1,4 +1,4 @@
-name: Deploy to Azure Web App
+name: Deploy Golf N Vibes to Azure
 
 on:
   push:
@@ -9,8 +9,11 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: golf-n-vibes-spree
-  AZURE_WEBAPP_PACKAGE_PATH: '.'
+  AZURE_RESOURCE_GROUP: golf-n-vibes-rg
   NODE_VERSION: '20'
+  # Use Docker Hub as fallback if ACR is not available
+  DOCKER_REGISTRY: docker.io
+  DOCKER_IMAGE_NAME: golfnvibes/spree-commerce
 
 jobs:
   build-and-deploy:
@@ -34,20 +37,20 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Log in to Azure Container Registry
+    - name: Log in to Container Registry
       uses: docker/login-action@v3
       with:
-        registry: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: ${{ env.DOCKER_REGISTRY }}
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v5
       with:
         push: true
         tags: |
-          ${{ secrets.REGISTRY_LOGIN_SERVER }}/spree-golf:${{ github.sha }}
-          ${{ secrets.REGISTRY_LOGIN_SERVER }}/spree-golf:latest
+          ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+          ${{ env.DOCKER_IMAGE_NAME }}:latest
         file: ./Dockerfile
         context: .
 
@@ -62,11 +65,11 @@ jobs:
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         slot-name: 'production'
-        images: ${{ secrets.REGISTRY_LOGIN_SERVER }}/spree-golf:latest
+        images: ${{ env.DOCKER_IMAGE_NAME }}:latest
 
     - name: Configure Web App Environment
       run: |
-        az webapp config appsettings set --resource-group golf-n-vibes-rg --name ${{ env.AZURE_WEBAPP_NAME }} --settings \
+        az webapp config appsettings set --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --settings \
           RAILS_ENV=production \
           SECRET_KEY_BASE="${{ secrets.SECRET_KEY_BASE }}" \
           RAILS_SERVE_STATIC_FILES=true \
@@ -78,6 +81,11 @@ jobs:
           DATABASE_PASSWORD=GolfNVibes2024! \
           DATABASE_PORT=5432 \
           DATABASE_SSLMODE=require \
+          PGHOST=golf-n-vibes-postgres.postgres.database.azure.com \
+          PGPORT=5432 \
+          PGUSER=golfadmin \
+          PGPASSWORD=GolfNVibes2024! \
+          PGDATABASE=golfnvibes_production \
           SPREE_ADMIN_EMAIL=admin@golfnvibes.com \
           SPREE_ADMIN_PASSWORD=GolfNVibes2024! \
           STORE_NAME="Golf N Vibes" \
