@@ -1,0 +1,44 @@
+FROM ruby:3.3.9-slim
+
+# Install dependencies
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    postgresql-client \
+    nodejs \
+    npm \
+    git \
+    curl \
+    zlib1g-dev \
+    libyaml-dev \
+    pkg-config \
+    ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Update SSL certificates
+RUN update-ca-certificates
+
+# Set up application directory
+WORKDIR /app
+
+# Copy gemfiles
+COPY Gemfile Gemfile.lock ./
+RUN bundle config set frozen false
+# Retry bundle install with network resilience settings
+RUN bundle config --global jobs 1
+RUN bundle config --global timeout 300
+RUN bundle install --retry 10
+
+# Copy application code
+COPY . .
+
+# Generate secret key and precompile assets
+RUN SECRET_KEY_BASE=dummy RAILS_ENV=production bundle exec rails assets:precompile
+
+# Expose port
+EXPOSE 3000
+
+# Start command
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000"]

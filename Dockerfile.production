@@ -1,0 +1,43 @@
+FROM ruby:3.3.9-slim
+
+# Install system dependencies
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    postgresql-client \
+    nodejs \
+    npm \
+    git \
+    curl \
+    zlib1g-dev \
+    libyaml-dev \
+    pkg-config \
+    ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Update SSL certificates
+RUN update-ca-certificates
+
+# Set up application directory
+WORKDIR /app
+
+# Copy application code
+COPY . .
+
+# Set environment variables
+ENV RAILS_ENV=production
+ENV RAILS_SERVE_STATIC_FILES=true
+ENV RAILS_LOG_TO_STDOUT=true
+ENV BUNDLE_DEPLOYMENT=1
+ENV BUNDLE_WITHOUT=development:test
+
+# Expose port
+EXPOSE 3000
+
+# Create startup script that handles gem installation and database setup
+RUN echo '#!/bin/bash\nset -e\necho "Installing gems..."\nbundle config set frozen false\nbundle config set --local deployment false\nbundle install --retry 5 --jobs 1 --deployment --without development test || bundle install --retry 10 --jobs 1 --without development test\necho "Gems installed successfully"\necho "Setting up database..."\nbundle exec rails db:create db:migrate db:seed || echo "Database setup failed, continuing..."\necho "Starting Rails server..."\nbundle exec rails server -b 0.0.0.0 -p 3000' > /app/start.sh && \
+    chmod +x /app/start.sh
+
+CMD ["/app/start.sh"]

@@ -45,7 +45,9 @@ module SpreeStarter
                       'localhost:3001', '127.0.0.1:3001', 'http://localhost:3001', 'http://127.0.0.1:3001']
         
         # Production origins
-        prod_origins = ['https://golfnvibes.com', 'https://www.golfnvibes.com', 'https://golf-n-vibes.vercel.app']
+        prod_origins = ['https://golfnvibes.com', 'https://www.golfnvibes.com', 
+                       'https://golf-n-vibes.vercel.app', 'https://next-golf.vercel.app',
+                       'https://golfnvibes.codedalex.com']
         
         # Add custom origins from environment variable
         custom_origins = ENV.fetch('CORS_ORIGINS', '').split(',').map(&:strip).reject(&:empty?)

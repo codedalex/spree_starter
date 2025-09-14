@@ -1,0 +1,71 @@
+FROM ruby:3.3.9-slim
+
+# Install system dependencies
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    postgresql-client \
+    nodejs \
+    npm \
+    git \
+    curl \
+    zlib1g-dev \
+    libyaml-dev \
+    pkg-config \
+    ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Update SSL certificates
+RUN update-ca-certificates
+
+# Set up application directory
+WORKDIR /app
+
+# Copy application code
+COPY . .
+
+# Set environment variables
+ENV RAILS_ENV=production
+ENV RAILS_SERVE_STATIC_FILES=true
+ENV RAILS_LOG_TO_STDOUT=true
+ENV BUNDLE_DEPLOYMENT=1
+ENV BUNDLE_WITHOUT=development:test
+
+# Expose port
+EXPOSE 3000
+
+# Create comprehensive startup script
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+echo "=== Golf n Vibes Application Startup ==="\n\
+echo "Starting application deployment..."\n\
+\n\
+echo "Step 1: Installing gems..."\n\
+bundle config set frozen false\n\
+bundle config set --local deployment false\n\
+bundle install --retry 10 --jobs 1 --without development test\n\
+echo "✅ Gems installed successfully"\n\
+\n\
+echo "Step 2: Waiting for database to be ready..."\n\
+until pg_isready -h $(echo $DATABASE_URL | cut -d@ -f2 | cut -d/ -f1) -p 5432; do\n\
+  echo "Database not ready, waiting..."\n\
+  sleep 2\n\
+done\n\
+echo "✅ Database is ready"\n\
+\n\
+echo "Step 3: Setting up database..."\n\
+bundle exec rails db:create || echo "Database already exists"\n\
+bundle exec rails db:migrate || echo "Migration failed, continuing..."\n\
+\n\
+echo "Step 4: Precompiling assets..."\n\
+bundle exec rails assets:precompile || echo "Asset precompilation failed, continuing..."\n\
+\n\
+echo "Step 5: Starting Rails server..."\n\
+echo "Application will be available at http://0.0.0.0:3000"\n\
+bundle exec rails server -b 0.0.0.0 -p 3000' > /app/start.sh && \
+    chmod +x /app/start.sh
+
+CMD ["/app/start.sh"]

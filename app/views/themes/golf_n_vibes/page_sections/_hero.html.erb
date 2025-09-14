@@ -5,39 +5,46 @@
                end
   theme_helper = golf_theme || (respond_to?(:current_theme) ? current_theme : nil)
   
+  # Safe helper method to get theme preferences
+  def safe_theme_preference(helper, method_name, default_value = nil)
+    return default_value unless helper
+    return helper.send(method_name) if helper.respond_to?(method_name)
+    default_value
+  end
+  
   config = {
-    title: (theme_helper&.preferred_hero_title.presence || 'Golf n Vibes'),
-    subtitle: theme_helper&.preferred_hero_subtitle.presence,
-    description: (theme_helper&.preferred_hero_description.presence || 'Experience the perfect blend of luxury golf and vibrant social experiences. Join us for unforgettable adventures on world-class courses.'),
+    title: (safe_theme_preference(theme_helper, :preferred_hero_title, 'Golf n Vibes')),
+    subtitle: safe_theme_preference(theme_helper, :preferred_hero_subtitle),
+    description: (safe_theme_preference(theme_helper, :preferred_hero_description, 'Experience the perfect blend of luxury golf and vibrant social experiences. Join us for unforgettable adventures on world-class courses.')),
     badge: {
-      text: (theme_helper&.preferred_hero_badge_text.presence || 'Premium Golf Tours'),
-      enabled: (theme_helper&.preferred_hero_badge_enabled != false),
-      variant: (theme_helper&.preferred_hero_badge_variant.presence || 'default')
+      text: (safe_theme_preference(theme_helper, :preferred_hero_badge_text, 'Premium Golf Tours')),
+      enabled: (safe_theme_preference(theme_helper, :preferred_hero_badge_enabled, true) != false),
+      variant: (safe_theme_preference(theme_helper, :preferred_hero_badge_variant, 'default'))
     },
     image: {
-      url: (theme_helper&.preferred_hero_image_url.presence || '/images/Qatar/poster.jpg'),
-      alt: (theme_helper&.preferred_hero_title.presence || 'Golf n Vibes')
+      url: (safe_theme_preference(theme_helper, :preferred_hero_image_url, '/images/Qatar/poster.jpg')),
+      alt: (safe_theme_preference(theme_helper, :preferred_hero_title, 'Golf n Vibes'))
     },
     layout: {
-      content_alignment: (theme_helper&.preferred_hero_content_alignment.presence || 'left'),
-      image_position: (theme_helper&.preferred_hero_image_position.presence || 'right'),
-      background_style: (theme_helper&.preferred_hero_background_style.presence || 'gradient'),
-      decorative_elements: (theme_helper&.preferred_hero_decorative_elements != false)
+      content_alignment: (safe_theme_preference(theme_helper, :preferred_hero_content_alignment, 'left')),
+      image_position: (safe_theme_preference(theme_helper, :preferred_hero_image_position, 'right')),
+      background_style: (safe_theme_preference(theme_helper, :preferred_hero_background_style, 'gradient')),
+      decorative_elements: (safe_theme_preference(theme_helper, :preferred_hero_decorative_elements, true) != false)
     },
     buttons: {
       primary: {
-        text: (theme_helper&.preferred_hero_primary_button_text.presence || 'Current Event'),
-        url: (theme_helper&.preferred_hero_primary_button_url.presence || '/products')
+        text: (safe_theme_preference(theme_helper, :preferred_hero_primary_button_text, 'Current Event')),
+        url: (safe_theme_preference(theme_helper, :preferred_hero_primary_button_url, '/products'))
       },
       secondary: {
-        text: (theme_helper&.preferred_hero_secondary_button_text.presence || 'Explore Past Events'),
-        url: (theme_helper&.preferred_hero_secondary_button_url.presence || '/products')
+        text: (safe_theme_preference(theme_helper, :preferred_hero_secondary_button_text, 'Explore Past Events')),
+        url: (safe_theme_preference(theme_helper, :preferred_hero_secondary_button_url, '/products'))
       }
     },
     colors: {
-      primary: (theme_helper&.preferred_primary_color.presence || '#4A7856'),
-      accent: (theme_helper&.preferred_accent_color.presence || '#80be78'),
-      secondary: (theme_helper&.preferred_neutral_color.presence || '#6B7280')
+      primary: (safe_theme_preference(theme_helper, :preferred_primary_color, '#4A7856')),
+      accent: (safe_theme_preference(theme_helper, :preferred_accent_color, '#80be78')),
+      secondary: (safe_theme_preference(theme_helper, :preferred_neutral_color, '#6B7280'))
     }
   }
   

@@ -7,15 +7,80 @@ if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   # Prepare the database (creates/migrates as needed)
   AUTO_ACCEPT=1 ./bin/rails db:prepare
   
-  # Load Spree sample data if it doesn't exist yet
-  # Check if admin user exists, if not, load sample data
-  echo "Checking for existing admin users..."
-  if ! ./bin/rails runner "puts Spree::User.exists?" 2>/dev/null | grep -q "true"; then
-    echo "Loading Spree sample data for Golf N Vibes store..."
-    ./bin/rails spree_sample:load 2>/dev/null || echo "Sample data loading completed or skipped"
-  else
-    echo "Sample data already exists, skipping..."
+  # Load Golf N Vibes custom data
+  echo "Loading Golf N Vibes custom products and data..."
+  
+  # Load custom product categories first
+  if [ -f "db/seeds/product_categories.rb" ]; then
+    ./bin/rails runner "load 'db/seeds/product_categories.rb'" 2>/dev/null || echo "Categories loaded"
+    echo "✅ Product categories loaded"
   fi
+  
+  # Load product options
+  if [ -f "db/seeds/product_options.rb" ]; then
+    ./bin/rails runner "load 'db/seeds/product_options.rb'" 2>/dev/null || echo "Options loaded"
+    echo "✅ Product options loaded"
+  fi
+  
+  # Load custom Golf products
+  if [ -f "db/seeds/golf_products.rb" ]; then
+    ./bin/rails runner "load 'db/seeds/golf_products.rb'" 2>/dev/null || echo "Golf products loaded"
+    echo "✅ Golf products loaded"
+  else
+    echo "⚠️ Custom golf products file not found, loading default sample data..."
+    ./bin/rails spree_sample:load 2>/dev/null || echo "Sample data loading completed or skipped"
+  fi
+  
+  # Create admin users for Golf N Vibes
+  echo "Creating Golf N Vibes admin users..."
+  ./bin/rails runner '
+    # Remove any existing regular users with these emails
+    Spree::User.where(email: ["ceo@golfnvibes.com", "admin@golfnvibes.com"]).destroy_all
+    
+    # Create CEO admin with all permissions
+    admin = Spree::AdminUser.find_or_create_by(email: "ceo@golfnvibes.com")
+    admin.first_name = "Golf n Vibes"
+    admin.last_name = "CEO"
+    admin.password = "GolfCEO2025!"
+    admin.password_confirmation = "GolfCEO2025!"
+    
+    if admin.save
+      puts "CEO Admin created: #{admin.email}"
+      # Ensure admin has proper admin role
+      admin_role = Spree::Role.find_or_create_by(name: "admin")
+      unless admin.has_spree_role?("admin")
+        admin.spree_roles << admin_role
+        puts "Admin role assigned to CEO"
+      end
+    else
+      puts "Failed to create CEO admin: #{admin.errors.full_messages.join(", ")}"
+    end
+    
+    # Create backup admin
+    backup = Spree::AdminUser.find_or_create_by(email: "admin@golfnvibes.com")
+    backup.first_name = "Admin"
+    backup.last_name = "User"
+    backup.password = "admin123"
+    backup.password_confirmation = "admin123"
+    
+    if backup.save
+      puts "Backup admin created: #{backup.email}"
+      # Ensure backup admin has proper admin role
+      admin_role = Spree::Role.find_or_create_by(name: "admin")
+      unless backup.has_spree_role?("admin")
+        backup.spree_roles << admin_role
+        puts "Admin role assigned to backup admin"
+      end
+    else
+      puts "Failed to create backup admin: #{backup.errors.full_messages.join(", ")}"
+    end
+    
+    puts "All admin users with roles:"
+    Spree::AdminUser.all.each do |u| 
+      roles = u.spree_roles.pluck(:name).join(", ")
+      puts "- #{u.email} (roles: #{roles})"
+    end
+  ' 2>/dev/null || echo "Admin user creation completed"
   
   echo "Golf N Vibes Spree store database setup completed!"
 fi

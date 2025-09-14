@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: spree_starter_development
+    volumes:
+      - 'postgres_dev:/var/lib/postgresql/data'
+    ports:
+      - "5432:5432"
+    
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - 'redis_dev:/data'
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    environment:
+      - RAILS_ENV=development
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/spree_starter_development
+      - REDIS_URL=redis://redis:6379
+      - RAILS_MASTER_KEY
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+    ports:
+      - "3001:3000"
+    depends_on:
+      - postgres
+      - redis
+    command: >
+      bash -c "
+        bundle install &&
+        bin/rails db:prepare &&
+        bin/rails db:seed &&
+        ruby setup_golf_products.rb &&
+        bin/rails server -b 0.0.0.0 -p 3000
+      "
+
+  sidekiq:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    environment:
+      - RAILS_ENV=development
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/spree_starter_development
+      - REDIS_URL=redis://redis:6379
+      - RAILS_MASTER_KEY
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+    depends_on:
+      - postgres
+      - redis
+      - web
+    command: bundle exec sidekiq
+
+volumes:
+  postgres_dev:
+  redis_dev:
+  bundle_cache:
