@@ -34,11 +34,11 @@ RUN bundle install --retry 10
 # Copy application code
 COPY . .
 
-# Generate secret key and precompile assets
-RUN SECRET_KEY_BASE=dummy RAILS_ENV=production bundle exec rails assets:precompile
+# Precompile assets for production
+RUN SECRET_KEY_BASE=dummy RAILS_ENV=production DATABASE_URL=postgres://dummy:dummy@dummy:5432/dummy bundle exec rails assets:precompile
 
 # Expose port
-EXPOSE 3000
+EXPOSE 80
 
 # Start command
-CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3000"]
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "80"]
